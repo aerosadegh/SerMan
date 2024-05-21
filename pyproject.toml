@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "serman"
+version = "0.1.0"
+description = "A GUI tools for manage Services"
+authors = ["Sadegh Yazdani <silverstar10@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyqt5-tools = "^5.15.9.3.3"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+mypy = "*"
+flake8-pyproject = "^1.2.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.mypy]
+python_version = "3.11"
+# warn_return_any = true
+ignore_missing_imports = true
+ignore_missing_imports_per_module = true
+warn_unused_configs = true
+exclude = [
+    "venv/*",        # TOML literal string (single-quotes, no escaping necessary)
+    "winenv/*",      # TOML literal string (single-quotes, no escaping necessary)
+    "venv/bin/*.py", # TOML basic string (double-quotes, backslash and other characters need escaping)
+    "migrations/*",
+    "minivib/*",
+    "build/*",
+    "init/*",
+    "dist/*",
+    # ".py",  # TOML basic string (double-quotes, backslash and other characters need escaping)
+]
+
+
+[tool.black]
+line-length = 99
+
+
+[tool.flake8]
+ignore = ['E231', 'E241']
+max-line-length = 99
+per-file-ignores = [
+    # '__init__.py:F401',
+]
+# count = true
