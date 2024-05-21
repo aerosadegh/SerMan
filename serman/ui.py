@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QWidget,
+    QLineEdit,
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
@@ -65,13 +66,33 @@ class SerManUi(QWidget):
             QIcon(resource_path("assets/restart_icon.png"))
         )  # Set icon for Restart button
 
+        self.refreshButton = QPushButton("Refresh")
+        self.refreshButton.setIcon(
+            QIcon(resource_path("assets/refresh_icon.png"))
+        )  # Set icon for Restart button
+
+        self.searchInput = QLineEdit()
+        self.searchInput.textChanged.connect(self.filter_table)
+
         # Create a horizontal layout for the buttons
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self.startButton)
         buttonLayout.addWidget(self.stopButton)
         buttonLayout.addWidget(self.restartButton)
 
+        searchLayout = QHBoxLayout()
+        searchLayout.addWidget(self.searchInput)
+        searchLayout.addWidget(self.refreshButton)
+
+        self.layout.addLayout(searchLayout)
         self.layout.addWidget(self.table)
-        self.layout.addLayout(buttonLayout)  # Add the button layout to the main layout
+        self.layout.addLayout(buttonLayout)
 
         self.setLayout(self.layout)
+
+    def filter_table(self, text):
+        # Iterate over all rows in the table
+        for row in range(self.table.rowCount()):
+            service_name = self.table.item(row, 0).text()
+            # If the service name contains the search text, show the row, otherwise hide it
+            self.table.setRowHidden(row, text not in service_name)

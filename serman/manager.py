@@ -7,10 +7,31 @@ from ui import SerManUi
 from utils import service_manager
 
 
+class UpdateThread(QThread):
+    def __init__(self, service_manager: service_manager.ServiceManagerProtocol, parent=None):
+        QThread.__init__(self, parent)
+        self.service_manager = service_manager
+        self.parent = parent
+
+    def run(self):
+        # Iterate over all rows in the table
+        for row in range(self.parent.table.rowCount()):
+            service_name = self.parent.table.item(row, 0).text()
+            service_status = self.service_manager.get_service_status(service_name)
+            service_pid = self.service_manager.get_service_pid(service_name)
+            self.parent.update_row(service_name, service_status, service_pid)
+
+
 class ServiceThread(QThread):
     update_signal = pyqtSignal(str, str, str)  # Add arguments to the signal
 
-    def __init__(self, service_manager, service_name, operation, parent=None):
+    def __init__(
+        self,
+        service_manager: service_manager.ServiceManagerProtocol,
+        service_name,
+        operation,
+        parent=None,
+    ):
         QThread.__init__(self, parent)
         self.service_manager = service_manager
         self.service_name = service_name
@@ -43,6 +64,7 @@ class ServiceManager(SerManUi):
         self.startButton.clicked.connect(self.start_service)
         self.stopButton.clicked.connect(self.stop_service)
         self.restartButton.clicked.connect(self.restart_service)
+        self.refreshButton.clicked.connect(self.update_table_thread)
 
     def start_service(self):
         print("Start service ...")
@@ -78,15 +100,10 @@ class ServiceManager(SerManUi):
             thread.start()
             self.threads.append(thread)
 
-    def update_table(self):
-        time.sleep(0.2)
-        # Iterate over all rows in the table
-        for row in range(self.table.rowCount()):
-            service_name = self.table.item(row, 0).text()
-            service_status = self.service_manager.get_service_status(service_name)
-            service_pid = self.service_manager.get_service_pid(service_name)
-            self.table.item(row, 1).setText(service_status)
-            self.table.item(row, 2).setText(service_pid)
+    def update_table_thread(self):
+        thread = UpdateThread(self.service_manager, parent=self)
+        thread.start()
+        self.threads.append(thread)
 
     @pyqtSlot(str, str, str)  # Add this line to create a new slot
     def update_row(self, service_name, service_status, service_pid):
