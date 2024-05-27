@@ -48,7 +48,6 @@ class LinuxServiceManager:
 
     @staticmethod
     def parse_services(output: str) -> set:
-    def parse_services(output):
         # This regular expression matches services in the format 'S{number}'
         pattern = re.compile(r"S\d+")
         services = pattern.findall(output)
