@@ -135,10 +135,10 @@ class WindowsServiceManager:
         return self.start_service(service)
 
 
-def get_services_manager() -> ServiceManagerProtocol:
+def get_services_manager() -> Type[ServiceManagerProtocol]:
     if platform.system() == "Linux":
-        return LinuxServiceManager()
+        return LinuxServiceManager
     elif platform.system() == "Windows":
-        return WindowsServiceManager()
+        return WindowsServiceManager
     else:
         raise Exception("Unsupported platform: " + platform.system())
